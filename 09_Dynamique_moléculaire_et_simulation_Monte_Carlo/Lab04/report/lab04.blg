@@ -1,0 +1,17 @@
+[0] Config.pm:304> INFO - This is Biber 2.14 (beta)
+[0] Config.pm:307> INFO - Logfile is 'lab04.blg'
+[86] biber:322> INFO - === Mon May 10, 2021, 14:16:03
+[108] Biber.pm:415> INFO - Reading 'lab04.bcf'
+[191] Biber.pm:943> INFO - Found 2 citekeys in bib section 0
+[211] Biber.pm:4256> INFO - Processing section 0
+[212] Utils.pm:75> INFO - Globbing data source 'biblio.bib'
+[212] Utils.pm:91> INFO - Globbed data source 'biblio.bib' to biblio.bib
+[233] Biber.pm:4455> INFO - Looking for bibtex format file 'biblio.bib' for section 0
+[234] bibtex.pm:1653> INFO - LaTeX decoding ...
+[241] bibtex.pm:1471> INFO - Found BibTeX data source 'biblio.bib'
+[311] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[312] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[312] Biber.pm:4084> INFO - Sorting list 'nty/global//global/global' of type 'entry' with template 'nty' and locale 'en-US'
+[312] Biber.pm:4090> INFO - No sort tailoring available for locale 'en-US'
+[323] bbl.pm:652> INFO - Writing 'lab04.bbl' with encoding 'UTF-8'
+[325] bbl.pm:755> INFO - Output to lab04.bbl

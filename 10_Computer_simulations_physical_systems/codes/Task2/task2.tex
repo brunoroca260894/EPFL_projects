@@ -1,0 +1,484 @@
+%%%
+% Computer Simulation of Physical Systems I (A. Pasquarello, EPFL)
+% Outline of Task II
+% -- author: Gabriele Sclauzero (EPFL) -- October 2010
+% -- update: Alexey Tal (EPFL) -- May 2021
+%%%
+\documentclass[12pt]{article}
+
+\usepackage[text={15.5cm,24.5cm},centering]{geometry}
+\setlength{\parindent}{0mm}
+\setlength{\parskip}{6pt}
+\pagestyle{empty}
+\usepackage{hyperref}
+\usepackage{amssymb}
+
+\usepackage{xcolor}
+\usepackage{times}
+\usepackage{amsmath}
+\usepackage{listings}
+%\usepackage{epsfig}
+%\renewcommand{\labelenumi}{\textbf{\theenumi.}}
+\usepackage{enumitem}
+  \setenumerate{leftmargin=*,font=\bfseries}
+  \setitemize{leftmargin=*,font=\bfseries} \definecolor{codegreen}{rgb}{0,0.6,0}
+  \definecolor{codegray}{rgb}{0.5,0.5,0.5}
+  \definecolor{codepurple}{rgb}{0.58,0,0.82}
+  \definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+ 
+  \lstdefinestyle{mystyle}{
+	  backgroundcolor=\color{backcolour},   
+	  commentstyle=\color{codegreen},
+	  keywordstyle=\color{magenta},
+	  numberstyle=\tiny\color{codegray},
+	  stringstyle=\color{codepurple},
+	  basicstyle=\ttfamily\footnotesize,
+	  breakatwhitespace=false,         
+	  breaklines=true,                 
+	  captionpos=b,                    
+	  keepspaces=true,                 
+	  numbers=none,                    
+	  numbersep=5pt,                  
+	  showspaces=false,                
+	  showstringspaces=false,
+	  showtabs=false,                  
+	  tabsize=2
+  }
+  \lstset{style=mystyle}
+	\hypersetup{
+	    colorlinks=true,
+			linkcolor=blue,
+	    }
+
+
+
+\newcommand{\bo}[1]{\boldsymbol{#1}}
+\newcommand{\ee}{\ensuremath{\varepsilon}}
+\newcommand{\sg}{\ensuremath{\sigma}}
+\newcommand{\ang}{\ensuremath{\textnormal{\AA}}}
+\newcommand{\secs}{\ensuremath{\textrm{s}}}
+
+
+
+\begin{document}
+\begin{center}
+\rule[2mm]{13.5cm}{.1pt} \\
+{\Large {\bf Computer simulation of physical systems I}}\\
+\rule[2mm]{13.5cm}{.1pt}
+\end{center}
+\vspace{-1cm}
+\begin{center}
+{\bf Task II: NVE molecular dynamics simulations} \\
+\end{center}
+
+In this exercise, you are going to perform molecular dynamics (MD) simulations
+of a system of atoms interacting through a Lennard-Jones pair potential in the
+NVE statistical ensemble. To complete this exercise you should download the
+python version of the MD code available on the website and closely follow the
+instructions provided in this guide. 
+
+All the functions necessary for performing MD simulations are implemented in
+\verb!MD.py!, which has to be imported in your python code, i.e.
+\verb!from MD import *!.
+
+\begin{enumerate}
+  \item \emph{Startup}: generate the starting atomic positions, the starting
+	  velocities, then change the system temperature to the desired value
+	  and equilibrate the sample.
+  \begin{itemize}
+		\item Use the function \verb!crystal()! to generate
+	  atomic positions on a FCC lattice; choose the parameters to match
+	  the number of atoms ($N=864$) and density
+	  ($\rho=1.374\,\mathrm{g\cdot cm^{-3}}$) for liquid Ar as in Rahman's
+	  paper\footnote{A. Rahman, Phys. Rev. A \textbf{136}, A405 (1964).}
+	  (see also additional notes).
+    \item Perform a short run to compute the velocities 
+						and then use the constant velocity rescaling to adjust
+	  the temperature to the value that you can find in Rahman's paper
+	  ($T\simeq94\,\textrm{K}$).
+    \item Equilibrate the system with a run in free evolution mode (regular NVE
+	  dynamics); monitor the conservation of energy and the fluctuations
+	  of other quantities.
+    \item (Optional): check the conservation of energy as a function of the
+	  integration step $\Delta t$; study the dependency of the
+	  fluctuations on the system size (i.e., as a function of $N$).
+  \end{itemize}
+
+\item \emph{Sample static properties}: sample the radial pair correlation
+	function, $g(r)$, and also the structure factor, $S(k)$, computed as the
+	radial Fourier Transform (FT) of $g(r)$. Compare the position of the
+	peaks with those reported in Rahman's paper. Try to explain the
+	behaviour of $g(r)$ and its limits for $r\to0$ and $r\to\infty$.
+
+\item \emph{Sample dynamical properties}: estimate the diffusion coefficient,
+	$D$, using two different methods, namely
+  \begin{enumerate}
+    \item Einstein's relation, $\textrm{MSD}(t) = C + 6 D t$, which involves the
+	    sampling of the mean square displacement (MSD) and a fitting
+	    procedure giving $C$ and $D$
+    \item the time integral of the velocity autocorrelation function 
+   \end{enumerate}
+
+\item (Optional) Repeat the same steps for a system at a different temperature
+	and/or density (remember that the accuracy of the time integration may
+	depend on these parameters) and compare the static and dynamic
+	properties. 
+\end{enumerate}
+
+
+\clearpage
+\begin{center}
+\bf Task II: additional notes on MD units 
+\end{center}
+
+The MD codes provided for this exercise (and the next one) solve numerically the
+equations of motion for a Lennard-Jones (LJ) fluid made of $N$ particles
+contained in a 3D periodically repeated rectangular box and interacting through
+the pair potential:
+\[
+V(r) = 4\ee \left[ \left(\frac{\sg}{r}\right)^{12}
+ -\left(\frac{\sg}{r}\right)^6\right] \;.
+\]
+The codes use internally the so-called LJ units (i.e. \sg\ and \ee\ are both set
+to $1$), so that distances are expressed in \sg\ units, while energies are given
+in \ee\ units.  Therefore, once the parameters of the the LJ potential have been
+fixed (for instance, $\sg=3.4\,\ang$ and $\ee/k_B = 120\,K$ for Ar, see Rahman's
+paper) the units of measure for all physical quantities are also fixed, as
+listed in the following table for those of our interest:
+\begin{center}
+ \begin{tabular}{c|c}
+quantity & LJ units \\
+\hline
+distance & \sg\ \\
+energy  & \ee\ \\
+velocity & $(\ee/M)^{1/2}$ \\
+temperature & $\ee/k_B$ \\
+time & $\sg (\ee/M)^{-1/2}$ \\
+ \end{tabular}
+\end{center}
+where $M$ is the mass of an atom in the simulation (for instance, $M \simeq 6.69
+\cdot 10^{-26}$ kg for Ar). 
+
+As an example, we can use the relations above to convert the integration time
+step used in Rahman's paper ($\Delta t = 10^{-14} \secs$) from seconds to LJ
+units. Inverting the relation 
+\[
+\Delta t = \sg (\ee/M)^{-1/2} \cdot \Delta u
+\]
+to obtain $\Delta u$ (in LJ units), we get the following value (expressing all
+parameters in SI units):
+\[
+\Delta u =  \Delta t \cdot (\ee/M)^{1/2}/\sg = 10^{-14} \cdot \left(\frac{120
+\cdot 1.38 \cdot 10^{-23}}{6.69 \cdot 10^{-26}}\right)^{1/2} \cdot \frac{1}{3.4
+\cdot 10^{-10}} \simeq 0.0046\;,
+\]
+which will be employed in our simulations in order to compare with Rahman's results.
+
+\newpage
+%---------------------------------------------------------------------------------
+\section*{Instructions}
+%---------------------------------------------------------------------------------
+
+\begin{itemize}
+\item Download and unpack the archive \verb!Task2.zip!. The MD code is
+implemented in \verb!MD.py! and the files \verb!Step*.py! contain minimal scripts
+required to complete the step.
+
+
+\item  if you managed to get the code working on your workstation, then you are
+ready to start: change directory to \verb!Step1_Startup! and move to Step 1.
+\end{itemize}
+
+%---------------------------------------------------------------------------------
+\subsection*{MD code}
+%---------------------------------------------------------------------------------
+The MD code requires the following libraries: 
+\begin{itemize}
+\item \verb!numpy! for linear algebra (\href{https://numpy.org}{https://numpy.org})
+\item	\verb!matplotlib! for plotting (\href{https://matplotlib.org}{https://matplotlib.org})
+\item	\verb!scipy! for statistics analysis and fitting (\href{https://scipy.org}{https://scipy.org})
+\item	\verb!numba! for acceleration of the most heavy functions
+(\href{http://numba.pydata.org}{http://numba.pinata.org}). The use of 
+this library can be easily avoided if necessary, but be prepared to loose the performance.
+To eliminate \verb!numba! from the code, remove the line
+\verb!@jit(parallel=True)! In \verb!MD.py!.
+\end{itemize}
+
+The main functions used for running MD simulation are \verb!run_NVE()! and
+\verb!run_NVT()!. These functions return all the results in a dictionary, which
+contains energies, velocities, $g(r)$ etc. You should find all the possible
+output in the return statement of the corresponding function.
+
+
+
+%---------------------------------------------------------------------------------
+\subsection*{Step 1: Startup}
+%---------------------------------------------------------------------------------
+\subsubsection*{1. Running \texttt{crystal()}}
+First of all, you must generate a configuration to start from.
+The function \verb!crystal()! is used to arrange atoms in a crystalline fcc
+structure.
+
+The function \verb!crystral()! takes two arguments:
+the number of units fcc cells along each direction \verb!Ncells! and 
+the lattice spacing \verb!lat_par!.
+
+The number of unit fcc cells (containing 4 atoms each) to stack along the
+three directions: choose them in order to get a cubic box with same number of
+particles ($N=864$) used in [1], hence select 6 unit cells along each axis so
+that N will be equal to $4 \times (6 \times 6 \times 6) = 864$ (in general you
+should not put less unit cells than what suggested to satisfy the minimum image
+criterion, but 6 cells is more than enough in this example).  This number of
+cells, combined with the lattice parameter chosen above, gives a box size
+approximately equal to that in [1] ($L=10.229$ in L.J. units, please see the
+notes), so that the densities will be the same too.
+
+The lattice spacing of the fcc crystal is the equilibrium lattice spacing of
+the LJ potential is $1.5496$, but here we choose a value, $a=1.7048$, that
+corresponds to the density studied by Rahman [1], i.e.  $1.374~\mathrm{g\cdot
+cm}^{-3}$ for Ar (with atomic mass approx.  $M = 6.69\cdot10^{-23} \mathrm{g}$).
+
+The function \verb!crystal()! returns two arrays: coordinates and velocities, the
+latter assigned randomly according to Gaussian distribution.
+
+The simplest example of using \verb!crystal()! is provided in \verb!Step1.py!:
+\begin{lstlisting}[language=python]
+Ncells = 6          # Number of unit cells along each axis
+lat_par = 1.7048    # Lattice parameter
+L = lat_par*Ncells  # Size of the simulation box
+N = 4*Ncells**3     # Number of atoms in the simulation box
+
+# Generate fcc structure
+pos, vel = crystal(Ncells, lat_par)
+\end{lstlisting}
+
+
+
+\subsubsection*{2. Running the MD code}
+In order to run the MD code, you need to call \verb!run_NVE()! which takes six
+compulsory arguments: coordinates, velocities, box size, \# steps, \# atoms, integration step.
+
+For example, the simplest script could look like this:
+
+\begin{lstlisting}[language=python]
+Ncells = 6          # Number of unit cells along each axis
+lat_par = 1.7048    # Lattice parameter
+L = lat_par*Ncells  # Size of the simulation box
+N = 4*Ncells**3     # Number of atoms in the simulation box
+nsteps = 200        # Number of steps
+dt = 0.003          # Integration step
+
+# Generate fcc structure
+pos, vel = crystal(Ncells, lat_par)
+
+# Perform simulation and collect the output into a dictionary
+output = run_NVE(pos, vel, L, nsteps, N, dt)
+\end{lstlisting}
+
+Files \verb!Step*.py! contain a minimal setup needed to complete each step. In
+order to perform one step at a time make sure to comment the corresponding
+part of the code (steps are separated by descriptive comments).
+
+To run MD with output on the screen:
+	\verb!python Step1.py!
+
+To run MD with output on a file:
+	\verb!python Step1.py > testrun.out!
+
+To run MD with output on both file and screen:
+	\verb!python Step1.py | tee testrun.out !
+
+
+The first part of \verb!Step1.py! will perform a constant energy calculation
+(NVE ensemble) with 200 steps (using a time step of 0.003), continuing from
+\verb!sample10.dat!  previously generated (or created by crystal), and writing
+on \verb!sample11.dat!  at the end.
+
+On standard output (or inside \verb!testrun.out!) you will find 
+some important quantities monitored at each time step,
+such as kinetic and potential energies. 
+
+\subsubsection*{3. Compute velocities}
+
+In order to bring the sample close to the desired temperature (through
+constant velocity rescaling), we first need to compute the velocities 
+for the atomic configuration generated with crystal. A small number of 
+time steps (here, 200) is sufficient for this purpose.
+
+The input file is stored as \verb!md_start.in!:
+
+\begin{lstlisting}[language=python]
+nsteps = 200        # Number of steps
+dt = 0.003          # Integration step
+
+# Read crystal shape, positions and velocities from a file
+N, L, pos, vel = read_pos_vel('sample10.dat')
+
+# Perform simulation and collect the output into a dictionary
+output = run_NVE(pos, vel, L, nsteps, N, dt)
+\end{lstlisting}
+
+For this tutorial, we will adopt an integration time step corresponding
+approximately to that used in [1] for liquid Ar ($10^{-14}~\mathrm{sec}$., see
+notes for the conversion to L.J. units). Among other things, you will be asked
+to check how your results depend on the time step: the value needed to ensure
+conservation of energy to a good extent depends on the temperature and on the
+particle density.
+
+\subsubsection*{4. Change T and equilibrate}
+
+Now we are ready to apply the constant velocity rescaling to our sample: at
+each time step the velocities will be scaled in order to bring the
+instantaneous temperature of the system to the desired value ($T=94.4\mathrm{K}$, which
+corresponds to about $0.7867$ in L.J. units for Ar).
+
+The input is:
+
+\begin{lstlisting}[language=python]
+nsteps = 200
+dt = 0.0046
+T = 0.7867          # requested temperature
+
+# Change T 
+output = run_NVE(output['pos'], output['vel'], L, nsteps, N, dt, T)
+
+# Plot temperature vs step
+plt.plot(output['nsteps'],output['EnKin']*2/3)
+plt.show()
+\end{lstlisting}
+
+T is an optional argument of the function \verb!run_NVE!, which default value is \verb!None!.
+When T is greater than or equal to 0, the code
+will run a run at constant temperature. Notice that is NOT a constant energy
+dynamics, hence we are not sampling the NVE ensemble during this run (nor the
+NVT ensemble, see Task3 for NVT molecular dynamics). Since we are interested 
+in the equilibrium properties (in the thermodynamics sense) of the system, 
+no data should be collected in this kind of run, however you can see how the
+temperature changes during the run by plotting it against the step.
+
+Before starting to collect data, we need to equilibrate the sample with a short
+run of regular NVE dynamics. 
+
+The input will be as follows:
+\begin{lstlisting}[language=python]
+nsteps = 800
+dt = 0.0046
+
+# Equilibrate
+output = run_NVE(output['pos'], output['vel'], L, nsteps, N, dt)
+
+# Plot total energy vs step
+plt.plot(output['nsteps'],output['EnKin']+output['EnPot'])
+plt.show()
+\end{lstlisting}
+
+By plotting the total energy, as a function of time you can check that 
+$E_{tot}$ is actually conserved (to a good approximation) in this kind of dynamics
+(and compare with what happens to $E_{tot}$ in the constant velocity rescaling run).
+You can verify that the conservation of energy becomes more strict as the time
+step 'deltat' is reduced.
+In general, the other quantities display much larger fluctuations, instead. 
+Notice that the average temperature might not be equal or not even close to the
+target temperature, since in the NVE dynamics is not possible to fix this
+variable (sometimes this makes also difficult to compare different MD 
+simulations).
+
+
+%---------------------------------------------------------------------------------
+\subsection*{Step 2: Sample static properties}
+%---------------------------------------------------------------------------------
+\subsubsection*{1. Compute $g(r)$ and $S(k)$ (through F.T.)}
+
+From the previously equilibrated atomic sample (which should be now stored in \\
+\verb!sampleT94.4.dat!) you can start a MD run in which you do a sampling
+of some physical properties.
+We will first focus on some static properties, namely the radial pair
+correlation function $g(r)$ and the structure factor $S(k)$. The latter can be
+obtained in two modes, either directly by sampling the Fourier transform (FT)
+of the number density, or, in the case of an isotropic system, as the FT of
+the pair correlation function (see notes and Allen-Tildesly, ch. 2.6). In this
+subtask you will proceed through the second way.
+
+
+The code can be used to perform a MD run of 2000
+steps and evaluate the $g(r)$ at every step. The quantity is then averaged over
+all these samplings.
+
+The code for $g(r)$ and $S(k)$ (through FT of $g(r)$) sampling is stored in \verb!Step2.py!:
+\begin{lstlisting}[language=python]
+nsteps = 2000
+dt = 0.0046
+N, L, pos, vel = read_pos_vel('sampleT94.4.dat')
+
+# Run MD simulation
+output = run_NVE(pos, vel, L, nsteps, N, dt)
+
+# Plot g(r)
+plt.plot(output['gofr']['r'],output['gofr']['g'])
+plt.show()
+
+# Plot S(k)
+plt.plot(output['sofk']['k'],output['sofk']['s'])
+plt.show()
+\end{lstlisting}
+
+
+\paragraph{TO DO:}
+\begin{enumerate}
+\item Measure position of the peaks (both in $g(r)$ and in $S(k)$) and compare to
+those reported by Rahman). Try to explain the other features you see.
+
+\item Study the behaviour of these two quantities as a function of the
+equilibration temperature and of the density.
+For the former, you need to go through the steps seen before in order to 
+bring the system close to the new temperature and equilibrate. For the
+latter you have either to generate a new sample with \verb!cyrstal()!.
+
+\item You may try a simulation with a larger number of atoms in order to extend
+the maximum radius allowed for $g(r)$, which is here limited to half of the
+box size (see next lectures for other methods to extend this limit). 
+Be aware that when the number of atoms gets larger than a few thousands the
+code will become quite slow (due to the $O(N^2))$ operations. In order to
+overcome this you may have to use another version of the code which uses
+Verlet neighbor lists (at least for the dynamical evolution part).
+
+\item When dealing with short range interactions (such as the LJ pair potential),
+the potential is approximated by truncating and setting it to a fixed value
+for interparticle distances beyond a certain cutoff radius (called
+\verb!r_cutoff!  in the code). By changing \verb!r_cutoff! from its default value (2.5), 
+you can check if and how this approximation affects the structural properties.  
+\end{enumerate}
+
+
+%---------------------------------------------------------------------------------
+\subsection*{Step 3: Sample dynamical properties}
+%---------------------------------------------------------------------------------
+\subsubsection*{Compute MSD and VACF}
+
+Now we move to the study of a dynamical quantity which is easily accessible
+through MD simulations: the diffusion coefficient. As you have learned during
+the class, this quantity can be computed from the mean square displacement
+(MSD) of the atomic positions through Einstein's relation, or from the integral
+of the velocity autocorrelation function (VACF).
+
+
+\paragraph{Important remarks}
+\begin{enumerate}
+\item ensemble average needs either to average on different time origins in the
+same run (not implemented) or to average (at same times) the quantity obtained
+as a function of time in several different runs (of same length).
+Smaller systems (small N) are subject to larger statistical fluctuations, 
+therefore the deviation from the ensamble average may be quite large if a
+single realization is used to estimate the diffusion coefficient.
+
+\item since we are sampling a dynamical quantity, the accuracy in the description
+of the particle trajectories plays more important role here. Be careful on the
+choice of \verb!dt!; the value used so far may not be sufficiently small.
+\end{enumerate}
+
+\verb!Step3.py! adopts the second method for computing the ensemble average of the
+dynamical quantities, i.e. the MSD and VACF are calculated as an average over a number
+of simulations defined by \verb!Nruns!. 
+
+
+\end{document}

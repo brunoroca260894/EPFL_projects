@@ -1,0 +1,25 @@
+Initialization on a lattice: particles placed on a lattice
+Initialization: total energy -5912.588663640125
+equilibration cycles
+cycle 500 frac. accp. 0.4846 dmax 0.2603
+cycle 1000 frac. accp. 0.4914 dmax 0.1728
+cycle 1500 frac. accp. 0.4924 dmax 0.1947
+cycle 2000 frac. accp. 0.5 dmax 0.2552
+cycle 2500 frac. accp. 0.5045 dmax 0.1802
+cycle 3000 frac. accp. 0.4963 dmax 0.1911
+cycle 3500 frac. accp. 0.5035 dmax 0.2262
+cycle 4000 frac. accp. 0.4972 dmax 0.1692
+cycle 4500 frac. accp. 0.5031 dmax 0.2298
+cycle 5000 frac. accp. 0.4967 dmax 0.1753
+cycle 5500 frac. accp. 0.5036 dmax 0.1914
+cycle 6000 frac. accp. 0.4969 dmax 0.2197
+cycle 6500 frac. accp. 0.5017 dmax 0.1558
+cycle 7000 frac. accp. 0.5003 dmax 0.252
+cycle 7500 frac. accp. 0.4974 dmax 0.1579
+cycle 8000 frac. accp. 0.5033 dmax 0.1783
+cycle 8500 frac. accp. 0.4987 dmax 0.2505
+cycle 9000 frac. accp. 0.4982 dmax 0.1464
+cycle 9500 frac. accp. 0.503 dmax 0.1799
+cycle 10000 frac. accp. 0.4989 dmax 0.2503
+production cycles
+--- 146.85120248794556 seconds ---
